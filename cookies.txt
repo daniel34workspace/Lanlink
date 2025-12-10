@@ -1,5 +1,0 @@
-# HTTrack Website Copier Cookie File
-# This file format is compatible with Netscape cookies
-.www.lanlink.com.br	TRUE	/	FALSE	1999999999	_cfuvid	oNgc83Wkj5BiGNx0YdwwmRWHsdog3AIJHI2Xfj1M0AE-1764000774164-0.0.1.1-604800000
-www.lanlink.com.br	TRUE	/	FALSE	1999999999	SameSite	None
-
