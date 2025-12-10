@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy PHP app to Azure Web App - AppLanlink
+name: Build and deploy ASP.Net Core app to Azure Web App - APPLanlink
 
 on:
   push:
@@ -11,37 +11,32 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: read #This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
         with:
-          php-version: '8.4'
+          dotnet-version: '10.x'
 
-      - name: Check if composer.json exists
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: 'composer.json'
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
 
-      - name: Run composer install if composer.json exists
-        if: steps.check_files.outputs.files_exists == 'true'
-        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
-
+      - name: dotnet publish
+        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: php-app
-          path: .
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     permissions:
       id-token: write #This is required for requesting the JWT
@@ -51,20 +46,20 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: php-app
+          name: .net-app
       
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_01B4866BCB5C46EA81DC0E0617D2264C }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E42E0E36827742A18AADE650BCF1E29E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_52E7B9D4A4CE46AD922221257FCF4BE0 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_13C2427BBDA24D6EAC0819138FC69CD4 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5BF976E7BCC74D12BA1D09EB7A8B59A7 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_25F92CA385C444049F2751EBFD8CBDFF }}
 
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
         with:
-          app-name: 'AppLanlink'
+          app-name: 'APPLanlink'
           slot-name: 'Production'
           package: .
           
